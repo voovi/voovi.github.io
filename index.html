@@ -150,8 +150,13 @@
 
     let startTime;
     let timerInterval;
+    let isTaskRunning = false;
 
     function startTask() {
+      if (isTaskRunning) {
+        return;
+      }
+
       const duration = durationInput.value || presetDurationSelect.value;
       if (!duration) {
         alert('Пожалуйста, укажите время выполнения задачи!');
@@ -185,11 +190,18 @@
           durationInput.value = '';
           presetDurationSelect.value = '';
           timeDisplay.textContent = '00:00:00';
+          isTaskRunning = false;
+          startButton.classList.remove('task-in-progress');
+          startButton.textContent = 'Запустить задачу';
         } else {
           const formattedTime = formatTime(remainingTime);
           timeDisplay.textContent = formattedTime;
         }
       }, 1000);
+
+      isTaskRunning = true;
+      startButton.classList.add('task-in-progress');
+      startButton.textContent = 'Задача в работе...';
     }
 
     function formatTime(time) {
@@ -219,6 +231,9 @@
       durationInput.value = '';
       presetDurationSelect.value = '';
       timeDisplay.textContent = '00:00:00';
+      isTaskRunning = false;
+      startButton.classList.remove('task-in-progress');
+      startButton.textContent = 'Запустить задачу';
     });
 
     // Запуск задачи по нажатию Enter в поле ввода времени
