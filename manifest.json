@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Hash Extension",
+  "version": "1.0",
+  "description": "Extension for calculating page hash",
+  "permissions": ["activeTab"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon.png"
+    }
+  },
+  "icons": {
+    "16": "icon.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}
