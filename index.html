@@ -57,6 +57,14 @@
       font-size: 24px;
     }
 
+    .task-list li.completed {
+      color: green;
+    }
+
+    .task-list li.overdue {
+      color: red;
+    }
+
     .task-list li span {
       color: #888;
       font-size: 16px;
@@ -108,6 +116,13 @@
   <div>
     <label for="duration">Время выполнения (в минутах):</label>
     <input type="number" id="duration" />
+    <select id="preset-duration">
+      <option value="1">1 минута</option>
+      <option value="5">5 минут</option>
+      <option value="10">10 минут</option>
+      <option value="15">15 минут</option>
+      <option value="30">30 минут</option>
+    </select>
   </div>
 
   <button id="start-btn" class="button" style="margin-top: 20px;">Запустить задачу</button>
@@ -127,6 +142,7 @@
     // Определяем элементы страницы
     const taskInput = document.getElementById('task');
     const durationInput = document.getElementById('duration');
+    const presetDurationSelect = document.getElementById('preset-duration');
     const startButton = document.getElementById('start-btn');
     const timeDisplay = document.getElementById('time');
     const finishButton = document.getElementById('finish-btn');
@@ -136,7 +152,7 @@
     let timerInterval;
 
     function startTask() {
-      const duration = durationInput.value;
+      const duration = durationInput.value || presetDurationSelect.value;
       if (!duration) {
         alert('Пожалуйста, укажите время выполнения задачи!');
         return;
@@ -150,18 +166,30 @@
       timerInterval = setInterval(function() {
         const remainingTime = endTime - Date.now();
         if (remainingTime <= 0) {
-          finishTask();
+          clearInterval(timerInterval);
+          const task = taskInput.value;
+          const completedTask = document.createElement('li');
+          completedTask.innerHTML = `${task} <span>(Фактическое время: <span id="actual-time">00:00:00</span>)</span>`;
+          const actualTimeDisplay = completedTask.querySelector('#actual-time');
+          actualTimeDisplay.textContent = formatTime(Date.now() - endTime);
+
+          const confirmation = confirm('Задача завершена?');
+          if (confirmation) {
+            completedTask.classList.add('completed');
+          } else {
+            completedTask.classList.add('overdue');
+          }
+
+          completedTasks.appendChild(completedTask);
+          taskInput.value = '';
+          durationInput.value = '';
+          presetDurationSelect.value = '';
+          timeDisplay.textContent = '00:00:00';
         } else {
           const formattedTime = formatTime(remainingTime);
           timeDisplay.textContent = formattedTime;
         }
       }, 1000);
-    }
-
-    function updateTimer() {
-      const elapsedTime = Date.now() - startTime;
-      const formattedTime = formatTime(elapsedTime);
-      timeDisplay.textContent = formattedTime;
     }
 
     function formatTime(time) {
@@ -176,22 +204,29 @@
       return number.toString().padStart(2, '0');
     }
 
-    function finishTask() {
+    // Привязываем события к кнопкам и полю ввода
+    startButton.addEventListener('click', startTask);
+    finishButton.addEventListener('click', function() {
       clearInterval(timerInterval);
       const task = taskInput.value;
-      const taskTime = formatTime(Date.now() - startTime);
       const completedTask = document.createElement('li');
-      completedTask.innerHTML = `${task} <span>(Фактическое время: ${taskTime})</span>`;
+      completedTask.innerHTML = `${task} <span>(Фактическое время: <span id="actual-time">00:00:00</span>)</span>`;
+      completedTask.classList.add('completed');
+      const actualTimeDisplay = completedTask.querySelector('#actual-time');
+      actualTimeDisplay.textContent = formatTime(Date.now() - startTime);
       completedTasks.appendChild(completedTask);
       taskInput.value = '';
       durationInput.value = '';
-      alert('Задача завершена!');
-    }
+      presetDurationSelect.value = '';
+      timeDisplay.textContent = '00:00:00';
+    });
 
-    // Привязываем события к кнопкам и полю ввода
-    startButton.addEventListener('click', startTask);
-
-    finishButton.addEventListener('click', finishTask);
+    // Запуск задачи по нажатию Enter в поле ввода времени
+    durationInput.addEventListener('keypress', function(event) {
+      if (event.key === 'Enter') {
+        startTask();
+      }
+    });
   </script>
 </body>
 </html>
