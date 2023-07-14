@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Таймер задачи</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Таймер задачи PWA">
+  <link rel="manifest" href="/manifest.json">
+  <style>
+    body {
+      font-family: "Courier New", monospace;
+      background-color: #f0f0f0;
+      color: #333;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 36px;
+    }
+
+    .task-input {
+      margin-bottom: 20px;
+    }
+
+    .timer {
+      font-size: 72px;
+      margin-bottom: 20px;
+    }
+
+    .button {
+      padding: 15px 30px;
+      font-size: 18px;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      border-radius: 50px;
+      transition: background-color 0.3s ease;
+      box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .button:hover {
+      background-color: #555;
+    }
+
+    .task-list {
+      margin-top: 20px;
+      text-align: left;
+    }
+
+    .task-list li {
+      margin-bottom: 10px;
+      font-size: 24px;
+    }
+
+    .task-list li span {
+      color: #888;
+      font-size: 16px;
+      margin-left: 10px;
+    }
+
+    @media screen and (max-width: 600px) {
+      h1 {
+        font-size: 28px;
+      }
+
+      .timer {
+        font-size: 48px;
+      }
+
+      .button {
+        padding: 12px 24px;
+        font-size: 16px;
+      }
+
+      .task-list li {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Таймер задачи</h1>
+
+  <div class="task-input">
+    <label for="task">Задача:</label>
+    <input type="text" id="task" />
+  </div>
+
+  <div>
+    <label for="duration">Время выполнения (в минутах):</label>
+    <input type="number" id="duration" />
+  </div>
+
+  <button id="start-btn" class="button" style="margin-top: 20px;">Запустить задачу</button>
+
+  <div class="timer">
+    <span id="time">00:00:00</span>
+  </div>
+
+  <button id="finish-btn" class="button">Завершить задачу</button>
+
+  <div class="task-list">
+    <h2>Выполненные задачи:</h2>
+    <ul id="completed-tasks"></ul>
+  </div>
+
+  <script>
+    // Определяем элементы страницы
+    const taskInput = document.getElementById('task');
+    const durationInput = document.getElementById('duration');
+    const startButton = document.getElementById('start-btn');
+    const timeDisplay = document.getElementById('time');
+    const finishButton = document.getElementById('finish-btn');
+    const completedTasks = document.getElementById('completed-tasks');
+
+    let startTime;
+    let timerInterval;
+
+    function startTask() {
+      const duration = durationInput.value;
+      if (!duration) {
+        alert('Пожалуйста, укажите время выполнения задачи!');
+        return;
+      }
+
+      const durationMilliseconds = duration * 60 * 1000;
+      startTime = Date.now();
+      const endTime = startTime + durationMilliseconds;
+
+      // Запускаем таймер, обновляющий отображение времени каждую секунду
+      timerInterval = setInterval(function() {
+        const remainingTime = endTime - Date.now();
+        if (remainingTime <= 0) {
+          finishTask();
+        } else {
+          const formattedTime = formatTime(remainingTime);
+          timeDisplay.textContent = formattedTime;
+        }
+      }, 1000);
+    }
+
+    function updateTimer() {
+      const elapsedTime = Date.now() - startTime;
+      const formattedTime = formatTime(elapsedTime);
+      timeDisplay.textContent = formattedTime;
+    }
+
+    function formatTime(time) {
+      const seconds = Math.floor((time / 1000) % 60);
+      const minutes = Math.floor((time / 1000 / 60) % 60);
+      const hours = Math.floor(time / 1000 / 60 / 60);
+
+      return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+    }
+
+    function pad(number) {
+      return number.toString().padStart(2, '0');
+    }
+
+    function finishTask() {
+      clearInterval(timerInterval);
+      const task = taskInput.value;
+      const completedTask = document.createElement('li');
+      const taskTime = durationInput.value;
+      completedTask.innerHTML = `${task} <span>(Время выполнения: ${taskTime} мин)</span>`;
+      completedTasks.appendChild(completedTask);
+      taskInput.value = '';
+      durationInput.value = '';
+      alert('Задача завершена!');
+    }
+
+    // Привязываем события к кнопкам и полю ввода
+    startButton.addEventListener('click', startTask);
+
+    finishButton.addEventListener('click', finishTask);
+  </script>
+</body>
+</html>

@@ -1,19 +1,22 @@
 {
-  "manifest_version": 3,
-  "name": "Hash Extension",
-  "version": "1.0",
-  "description": "Extension for calculating page hash",
-  "permissions": ["activeTab"],
-  "action": {
-    "default_popup": "popup.html",
-    "default_icon": {
-      "16": "icon.png"
+  "name": "Таймер задачи",
+  "short_name": "Таймер",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f0f0f0",
+  "theme_color": "#333",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
-  },
-  "icons": {
-    "16": "icon.png"
-  },
-  "background": {
-    "service_worker": "background.js"
-  }
+  ]
 }
