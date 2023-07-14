@@ -4,7 +4,10 @@
   <title>Таймер задачи</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Таймер задачи PWA">
-  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#333">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link rel="apple-touch-icon" href="/icon.png">
   <style>
     body {
       font-family: "Courier New", monospace;
@@ -76,6 +79,20 @@
 
       .task-list li {
         font-size: 20px;
+      }
+    }
+
+    /* Дополнительные стили для мобильных устройств */
+    @media screen and (max-width: 600px) {
+      body {
+        padding-top: 60px;
+      }
+
+      .task-input,
+      .timer,
+      .button {
+        margin-left: 10px;
+        margin-right: 10px;
       }
     }
   </style>
@@ -162,9 +179,9 @@
     function finishTask() {
       clearInterval(timerInterval);
       const task = taskInput.value;
+      const taskTime = formatTime(Date.now() - startTime);
       const completedTask = document.createElement('li');
-      const taskTime = durationInput.value;
-      completedTask.innerHTML = `${task} <span>(Время выполнения: ${taskTime} мин)</span>`;
+      completedTask.innerHTML = `${task} <span>(Фактическое время: ${taskTime})</span>`;
       completedTasks.appendChild(completedTask);
       taskInput.value = '';
       durationInput.value = '';
